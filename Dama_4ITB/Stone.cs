@@ -16,12 +16,6 @@ namespace Dama_4ITB
         protected bool isWhite;
         public bool IsWhite => isWhite;
 
-        protected int x;
-        public int X => x;
-
-        protected int y;
-        public int Y => y;
-
         protected int tileSize;
 
         static int innerOffset = 12;
@@ -30,14 +24,12 @@ namespace Dama_4ITB
 
         #endregion
 
-        public Stone(int tileSize, bool isWhite, int x, int y) {
+        public Stone(int tileSize, bool isWhite) {
             this.tileSize = tileSize;
             this.isWhite = isWhite;
-            this.x = x;
-            this.y = y;
         }
 
-        public virtual void Draw(Graphics g) {
+        public virtual void Draw(Graphics g, int x, int y) {
             if (isWhite) {
                 g.FillEllipse(
                     Brushes.SandyBrown,

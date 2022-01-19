@@ -36,6 +36,7 @@ namespace Dama_4ITB
             this.Name = "Board";
             this.Size = new System.Drawing.Size(801, 801);
             this.Paint += new System.Windows.Forms.PaintEventHandler(this.Board_Paint);
+            this.MouseClick += new System.Windows.Forms.MouseEventHandler(this.Board_MouseClick);
             this.ResumeLayout(false);
 
         }

@@ -17,46 +17,69 @@ namespace Dama_4ITB
 
         private int tileSize;
 
-        Stone[,] stones;
+        Tile[,] tiles;
+        private int rowCount = 3;
 
         public Board() {
             InitializeComponent();
 
             tileSize = this.Width / WIDTH;
 
-            stones = new Stone[WIDTH, HEIGHT];
-            stones[3, 3] = new Stone(tileSize, true, 3, 3);
-            stones[3, 4] = new Stone(tileSize, true, 3, 4);
+            tiles = new Tile[WIDTH, HEIGHT];
+            
+            CreateCheckboard();
+            CreateBaseGame(rowCount);
 
-            stones[4, 3] = new Stone(tileSize, false, 4, 3);
-            stones[4, 4] = new Stone(tileSize, false, 4, 4);
         }
 
-        private void Board_Paint(object sender, PaintEventArgs e) {
-            e.Graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
-            DrawCheckBoard(e.Graphics);
-            DrawStones(e.Graphics);
-        }
-
-        private void DrawStones(Graphics g) {
-            for (int i = 0; i < stones.GetLength(0); i++) {
-                for (int j = 0; j < stones.GetLength(1); j++) {
-                    if(stones[i,j] != null) {
-                        stones[i, j].Draw(g);
-                    }
-                }
-            }
-        }
-
-        private void DrawCheckBoard(Graphics g) {
+        private void CreateCheckboard() {
             bool isWhite = true;
             for (int i = 0; i < WIDTH; i++) {
                 for (int j = 0; j < HEIGHT; j++) {
-                    g.FillRectangle((isWhite ? Brushes.White : Brushes.Black), i * tileSize, j * tileSize, tileSize, tileSize);
+                    tiles[i, j] = new Tile(i, j, tileSize, isWhite);
                     isWhite = !isWhite;
                 }
                 isWhite = !isWhite;
             }
+        } 
+
+        private void CreateBaseGame(int count) {
+            int x, y;
+            for (int i = 0; i < WIDTH / 2; i++) {
+                for (int j = 0; j < count; j++) {
+                    x = (j % 2 == 1) ? i * 2 : i * 2 + 1;
+                    y = j;
+                    tiles[x, y].CurrentStone = new Stone(tileSize, true);
+                    x = (j % 2 == 0) ? i * 2 : i * 2 + 1;
+                    y = HEIGHT - y - 1;
+                    tiles[x, y].CurrentStone = new Stone(tileSize, false);
+
+                }
+            }
+        }
+
+        private void Board_Paint(object sender, PaintEventArgs e) {
+            e.Graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
+            DrawCheckboard(e.Graphics);
+        }
+
+        private void DrawCheckboard(Graphics g) {
+            for(int i = 0; i < WIDTH; i++) {
+                for(int j = 0; j < HEIGHT; j++) {
+                    tiles[i, j].Draw(g);
+                }
+            }
+        }
+
+        private void Board_MouseClick(object sender, MouseEventArgs e) {
+            int x = e.X / tileSize;
+            int y = e.Y / tileSize;
+
+            // TODO: PODMÍNKY PRO HIGHLIGHT A PRAVIDLA
+            var selected = tiles[x, y];
+            Highlighter.Instance.UnHighlight();
+            Highlighter.Instance.Highlight(selected);
+            Refresh();
         }
     }
 }
