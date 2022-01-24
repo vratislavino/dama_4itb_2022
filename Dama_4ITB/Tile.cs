@@ -25,11 +25,21 @@ namespace Dama_4ITB
 
         private bool highlighted = false;
 
+        public bool IsHighlighted => highlighted;
+
         public Tile(int x, int y, int tileSize, bool isWhite) {
             this.x = x;
             this.y = y;
             this.tileSize = tileSize;
             brush = isWhite ? Brushes.White : Brushes.Black;
+        }
+
+        public bool HasStone(bool white) {
+            if (CurrentStone == null)
+                return false;
+            if (CurrentStone.IsWhite != white)
+                return false;
+            return true;
         }
 
         public void Draw(Graphics g) {
