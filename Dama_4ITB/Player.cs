@@ -11,5 +11,6 @@ namespace Dama_4ITB
         public string name;
         public bool hasWhite;
         public int directionY;
+        public int currentStoneCount;
     }
 }

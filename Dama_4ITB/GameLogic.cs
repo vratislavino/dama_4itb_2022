@@ -13,6 +13,9 @@ namespace Dama_4ITB
         Player p1;
         Player p2;
 
+        public Player ReadyPlayerOne => p1;
+        public Player ReadyPlayerTwo => p2;
+
         Player currentPlayer;
         public Player CurrentPlayer {
             get { return currentPlayer; }

@@ -14,6 +14,11 @@ namespace Dama_4ITB
     {
         public Form1() {
             InitializeComponent();
+            board1.ScoreNeedsToBeUpdatedOnFormBecauseSomethingChangedLol += OnScoreNeedsToBeUpdatedOnFormBecauseSomethingChangedLol;
+        }
+
+        private void OnScoreNeedsToBeUpdatedOnFormBecauseSomethingChangedLol(Player theFirstPlayerInOurGame, Player theSecondPlayerInOurGame) {
+            this.Text = theFirstPlayerInOurGame.name + ": " + theFirstPlayerInOurGame.currentStoneCount + " ; " + theSecondPlayerInOurGame.name + ": " + theSecondPlayerInOurGame.currentStoneCount;
         }
     }
 }
