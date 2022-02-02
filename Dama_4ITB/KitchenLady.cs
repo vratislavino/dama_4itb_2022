@@ -34,6 +34,9 @@ namespace Dama_4ITB
 
             return possibleTiles;
         }
+
+        bool lastWasEnemy = false;
+
         protected override Tile GetPossibleTile(Tile[,] tiles, Tile t, List<Tile> possibleTiles, int xDir, int yDir, int remain) {
             if (remain == 0)
                 return null;
@@ -42,12 +45,17 @@ namespace Dama_4ITB
                 return null;
             if (next.CurrentStone == null) {
                 possibleTiles.Add(next);
+                lastWasEnemy = false;
                 return GetPossibleTile(tiles, next, possibleTiles, xDir, yDir, remain - 1); ;
             }
             if (next.HasStone(Player.hasWhite))
                 return null;
 
             //enemy stone is here!
+            if(lastWasEnemy) {
+                return null;
+            }
+            lastWasEnemy = true;
             return GetPossibleTile(tiles, next, possibleTiles, xDir, yDir, remain - 1);
 
         }

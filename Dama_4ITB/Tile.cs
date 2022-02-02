@@ -45,7 +45,7 @@ namespace Dama_4ITB
         public void Draw(Graphics g) {
             
             g.FillRectangle(highlighted ? Brushes.Yellow : brush, x * tileSize, y * tileSize, tileSize, tileSize);
-            
+            g.DrawString($"{x}:{y}", SystemFonts.MenuFont, Brushes.Red, x * tileSize, y * tileSize);
             if(currentStone != null) {
                 currentStone.Draw(g, x, y);
             }

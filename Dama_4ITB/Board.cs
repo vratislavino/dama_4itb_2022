@@ -20,11 +20,8 @@ namespace Dama_4ITB
         private int tileSize;
 
         Tile[,] tiles;
-        private int rowCount = 1;
+        private int rowCount = 3;
         private GameLogic gameLogic;
-
-        Turn turn1;
-        Turn turn2;
 
         public Board() {
             InitializeComponent();
@@ -72,6 +69,7 @@ namespace Dama_4ITB
                 winner = gameLogic.ReadyPlayerOne.name;
             }
             if(!string.IsNullOrEmpty(winner)) {
+                Refresh();
                var res = MessageBox.Show("Vyhrál hráč " + winner + ". Chcete spustit novou hru?", "Konec hry!", MessageBoxButtons.YesNo);
                 if(res == DialogResult.Yes) {
                     Application.Restart();
@@ -137,37 +135,38 @@ namespace Dama_4ITB
 
                 var tilesToHighlight = gameLogic.CurrentTile.CurrentStone.GetPossibleTiles(tiles, selected);
                 Highlighter.Instance.Highlight(tilesToHighlight);
-                Refresh();
 
-                return;
-                List<Tile> enTiles1 = new List<Tile>();
-                List<Tile> enTiles2 = new List<Tile>();
-                
-                var t1 = GetPossibleTile(selected, 1, gameLogic.CurrentPlayer.directionY, enTiles1, 2);
-                var t2 = GetPossibleTile(selected, -1, gameLogic.CurrentPlayer.directionY, enTiles2, 2);
-
-                turn1 = new Turn(t1, enTiles1);
-                turn2 = new Turn(t2, enTiles2);
-
-                if (t1 != null)
-                    Highlighter.Instance.Highlight(t1);
-                if (t2 != null)
-                    Highlighter.Instance.Highlight(t2);
             } else {
                 if (gameLogic.CurrentTile != null) {
                     // Přesun kamene -> ukončení tahu
                     if (gameLogic.CurrentTile.IsHighlighted && selected.IsHighlighted) {
+                        // TEST FOR KICKS
+                        KickFromTo(selected, gameLogic.CurrentTile);
                         selected.CurrentStone = gameLogic.CurrentTile.CurrentStone;
                         gameLogic.CurrentTile.CurrentStone = null;
-                        // skočil jsem kámen?
-                        SolveTurn(selected, turn1);
-                        SolveTurn(selected, turn2);
+                        
                         TestForKitchenLady(selected);
                         gameLogic.SwitchPlayer();
                     }
                 }
             }
             Refresh();
+        }
+
+        private void KickFromTo(Tile start, Tile end) {
+            int startX = start.X;
+            int startY = start.Y;
+            Point dir = new Point(end.X - startX < 0 ? -1 : 1, end.Y - startY < 0 ? -1 : 1);
+            Tile tempTile = null;
+            for(int i = 0; i < Math.Abs(end.X - start.X)-1; i++) {
+
+                startX += dir.X;
+                startY += dir.Y;
+                tempTile = GetTile(startX, startY);
+                Console.WriteLine($"Testing: {startX}:{startY}");
+                if (tempTile.CurrentStone != null)
+                    tempTile.CurrentStone = null;
+            }
         }
 
         private void TestForKitchenLady(Tile tile) {
@@ -180,14 +179,6 @@ namespace Dama_4ITB
                 if(tile.Y == 0) {
                     KitchenLady lady = new KitchenLady(tile.CurrentStone);
                     tile.CurrentStone = lady;
-                }
-            }
-        }
-
-        private void SolveTurn(Tile selected, Turn t) {
-            if (selected == t.TargetTile) {
-                for (int i = 0; i < t.EnemyTiles.Count; i++) {
-                    t.EnemyTiles[i].CurrentStone = null;
                 }
             }
         }
