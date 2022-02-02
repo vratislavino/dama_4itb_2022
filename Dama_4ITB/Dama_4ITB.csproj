@@ -60,6 +60,7 @@
     </Compile>
     <Compile Include="GameLogic.cs" />
     <Compile Include="Highlighter.cs" />
+    <Compile Include="KitchenLady.cs" />
     <Compile Include="Player.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

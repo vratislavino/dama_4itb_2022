@@ -14,13 +14,13 @@ namespace Dama_4ITB
     {
         public event Action<Player, Player> ScoreNeedsToBeUpdatedOnFormBecauseSomethingChangedLol;
 
-        const int WIDTH = 8;
-        const int HEIGHT = 8;
+        public const int WIDTH = 8;
+        public const int HEIGHT = 8;
 
         private int tileSize;
 
         Tile[,] tiles;
-        private int rowCount = 0;
+        private int rowCount = 1;
         private GameLogic gameLogic;
 
         Turn turn1;
@@ -99,10 +99,10 @@ namespace Dama_4ITB
                 for (int j = 0; j < count; j++) {
                     x = (j % 2 == 1) ? i * 2 : i * 2 + 1;
                     y = j;
-                    tiles[x, y].CurrentStone = new Stone(tileSize, true);
+                    tiles[x, y].CurrentStone = new Stone(tileSize, gameLogic.ReadyPlayerOne);
                     x = (j % 2 == 0) ? i * 2 : i * 2 + 1;
                     y = HEIGHT - y - 1;
-                    tiles[x, y].CurrentStone = new Stone(tileSize, false);
+                    tiles[x, y].CurrentStone = new Stone(tileSize, gameLogic.ReadyPlayerTwo);
 
                 }
             }
@@ -125,15 +125,21 @@ namespace Dama_4ITB
             int x = e.X / tileSize;
             int y = e.Y / tileSize;
 
-            // TODO: ODSTRAŇOVAT PŘESKOČENÝ KÁMEN
             var selected = tiles[x, y];
 
             if (selected.HasStone(gameLogic.CurrentPlayer.hasWhite)) {
                 Highlighter.Instance.UnHighlight();
                 Highlighter.Instance.Highlight(selected);
 
+                //MessageBox.Show($"{x}:{y}");
+
                 gameLogic.CurrentTile = selected;
 
+                var tilesToHighlight = gameLogic.CurrentTile.CurrentStone.GetPossibleTiles(tiles, selected);
+                Highlighter.Instance.Highlight(tilesToHighlight);
+                Refresh();
+
+                return;
                 List<Tile> enTiles1 = new List<Tile>();
                 List<Tile> enTiles2 = new List<Tile>();
                 
@@ -156,11 +162,26 @@ namespace Dama_4ITB
                         // skočil jsem kámen?
                         SolveTurn(selected, turn1);
                         SolveTurn(selected, turn2);
+                        TestForKitchenLady(selected);
                         gameLogic.SwitchPlayer();
                     }
                 }
             }
             Refresh();
+        }
+
+        private void TestForKitchenLady(Tile tile) {
+            if(gameLogic.CurrentPlayer.hasWhite) {
+                if (tile.Y == 7) {
+                    KitchenLady lady = new KitchenLady(tile.CurrentStone);
+                    tile.CurrentStone = lady;
+                }
+            } else {
+                if(tile.Y == 0) {
+                    KitchenLady lady = new KitchenLady(tile.CurrentStone);
+                    tile.CurrentStone = lady;
+                }
+            }
         }
 
         private void SolveTurn(Tile selected, Turn t) {

@@ -13,24 +13,27 @@ namespace Dama_4ITB
 
         #region Variables
 
-        protected bool isWhite;
-        public bool IsWhite => isWhite;
+        private Player player;
+        public Player Player => player; 
+        
+        //protected bool isWhite;
+        public bool IsWhite => player.hasWhite;
 
-        protected int tileSize;
+        public int tileSize;
 
-        static int innerOffset = 12;
+        static protected int innerOffset = 12;
         static Pen outlinePenBlack = new Pen(Color.Black, 4);
         static Pen outlinePenWhite = new Pen(Color.White, 4);
 
         #endregion
 
-        public Stone(int tileSize, bool isWhite) {
+        public Stone(int tileSize, Player player) {
             this.tileSize = tileSize;
-            this.isWhite = isWhite;
+            this.player = player;
         }
 
         public virtual void Draw(Graphics g, int x, int y) {
-            if (isWhite) {
+            if (IsWhite) {
                 g.FillEllipse(
                     Brushes.SandyBrown,
                     x * tileSize + innerOffset,
@@ -65,5 +68,36 @@ namespace Dama_4ITB
             }
         }
 
+        public virtual List<Tile> GetPossibleTiles(Tile[,] tiles, Tile t) {
+            List<Tile> possibleTiles = new List<Tile>();
+            
+            GetPossibleTile(tiles, t, possibleTiles, 1, player.directionY, 2);
+            GetPossibleTile(tiles, t, possibleTiles, -1, player.directionY, 2);
+
+            return possibleTiles;
+        }
+
+        protected virtual Tile GetPossibleTile(Tile[,] tiles, Tile t, List<Tile> possibleTiles, int xDir, int yDir, int remain) {
+            if (remain == 0)
+                return null;
+            var next = GetTile(tiles, t.X + xDir, t.Y + yDir);
+            if (next == null)
+                return null;
+            if (next.CurrentStone == null) {
+                possibleTiles.Add(next);
+                return next;
+            }
+            if (next.HasStone(player.hasWhite))
+                return null;
+
+            //enemy stone is here!
+            return GetPossibleTile(tiles, next, possibleTiles, xDir, yDir, remain - 1);
+        }
+
+        protected Tile GetTile(Tile[,] tiles, int x, int y) {
+            if (x >= 0 && x < Board.WIDTH && y >= 0 && y < Board.HEIGHT)
+                return tiles[x, y];
+            return null;
+        }
     }
 }
